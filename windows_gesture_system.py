@@ -1,4 +1,5 @@
 
+from unittest import result
 import cv2
 import numpy as np
 import mediapipe as mp
@@ -29,35 +30,31 @@ with mp_hands.Hands(
     # pass by reference.
     image.flags.writeable = False
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    results = hands.process(image)
+    results = hands.process(image)    
+    print('Handedness:', results.multi_handedness)
     # Draw the hand annotations on the image.
     image.flags.writeable = True
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+
     if results.multi_hand_landmarks:
       print("-----------")
 
-      #  for handslms in result.multi_hand_landmarks:
-      #     for lm in handslms.landmark:
-      #         # print(id, lm)
-      #         lmx = int(lm.x * x)
-      #         lmy = int(lm.y * y)
-      #         landmarks.append([lmx, lmy])
-
       landmarks = []
-      for hand_landmarks in results.multi_hand_landmarks:
+      for hand_landmarks in results.multi_hand_landmarks:      
 
         for lm in hand_landmarks.landmark:
               # print(id, lm)
               lmx = int(lm.x * x)
               lmy = int(lm.y * y)
               landmarks.append([lmx, lmy])
+        print(len(landmarks))
         print(landmarks)
 
         image_height, image_width, _ = image.shape
         index_tip_pos = np.array((hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].x * 100, hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].y * 100))
         thumb_tip_pos = np.array((hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_TIP].x * 100, hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_TIP].y * 100))
         dist = np.linalg.norm(index_tip_pos-thumb_tip_pos)
-        print(dist)
+        # print(dist)
 
         mp_drawing.draw_landmarks(
             image,
